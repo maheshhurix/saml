@@ -18,7 +18,7 @@ import org.joda.time.DateTime;
 
 public class AuthNRequestBuilder {
   
-  private static final String SAML2_NAME_ID_POLICY = "urn:oasis:names:tc:SAML:2.0:nameid-format:persistent"; 
+  private static final String SAML2_NAME_ID_POLICY = "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified"; 
   private static final String SAML2_PROTOCOL = "urn:oasis:names:tc:SAML:2.0:protocol";
   private static final String SAML2_POST_BINDING = "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST";
   private static final String SAML2_PASSWORD_PROTECTED_TRANSPORT = "urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport";
@@ -38,9 +38,10 @@ public class AuthNRequestBuilder {
       authRequest.setAssertionConsumerServiceURL(assertionConsumerServiceUrl);
       authRequest.setIssuer(buildIssuer( issuerId)); 
       authRequest.setNameIDPolicy(buildNameIDPolicy()); 
-      authRequest.setRequestedAuthnContext(buildRequestedAuthnContext());
+//      authRequest.setRequestedAuthnContext(buildRequestedAuthnContext());
       authRequest.setID(UUID.randomUUID().toString()); 
       authRequest.setVersion(SAMLVersion.VERSION_20);
+      authRequest.setDestination("https://signin.acep.org/idp/SAML/SSOService");
       
       return authRequest; 
   } 

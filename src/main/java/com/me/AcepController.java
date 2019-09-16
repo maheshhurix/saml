@@ -2,99 +2,50 @@ package com.me;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Base64;
 import java.util.Map;
 
-import javax.lang.model.util.Elements;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.opensaml.Configuration;
 import org.opensaml.DefaultBootstrap;
 import org.opensaml.common.SAMLException;
-import org.opensaml.saml2.core.Assertion;
 import org.opensaml.saml2.core.Response;
 import org.opensaml.saml2.core.Status;
 import org.opensaml.saml2.core.StatusCode;
-import org.opensaml.ws.soap.client.http.HttpClientBuilder;
 import org.opensaml.xml.ConfigurationException;
 import org.opensaml.xml.XMLObject;
 import org.opensaml.xml.io.Unmarshaller;
 import org.opensaml.xml.io.UnmarshallerFactory;
 import org.opensaml.xml.io.UnmarshallingException;
-import org.opensaml.xml.signature.Signature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.bind.annotation.RestController;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.xml.sax.SAXException;
 
 import com.me.service.LoginService;
 
-@Controller
-public class LoginController {
-
-	private static Logger LOGGER = LoggerFactory.getLogger(LoginController.class.getName());
-
+@RestController
+public class AcepController {
+	
+	@Autowired
+	private Environment environment;
+	@Autowired
+	private LoginService loginService;
+	
 	private static boolean bootStrapped = false;
 	public static final String APPM_MGT_SAML2_RESPONSE = "AppMgtSAML2Response";
 
-	@RequestMapping("/")
-	String index() {
-		return "index";
-	}
-
-	private Environment environment;
-	private LoginService loginService;
-
-	@Autowired
-	public LoginController(LoginService pLoginService, Environment pEnvironment) {
-		this.environment = pEnvironment;
-		this.loginService = pLoginService;
-	}
-
-	@RequestMapping(value = "ssoredirect", method = RequestMethod.GET)
-	public String redirectToIDPWithAuthNRequest() {
-
-		String redirectUrl, redirectString = null;
-
-		String idpAppURL = environment.getProperty("IDP_SSO_URL");
-		String relayState = environment.getProperty("RELAYSTATE_BASE_URL") + "?articleId=1234"; // Relaystate can be
-		// dynamic
-		String assertionConsumerServiceUrl = environment.getProperty("ACS_URL");
-		String issuerId = environment.getProperty("IDP_ISSUER_ID");
-		redirectUrl = loginService.getAuthNRedirectUrl(idpAppURL, relayState, assertionConsumerServiceUrl, issuerId);
-
-		LOGGER.info("Redirecting to " + redirectUrl + " for applicationName:"
-				+ environment.getProperty("RELAYSTATE_BASE_URL"));
-
-		return "redirect:" + redirectUrl;
-	}
-
+	
 	@ResponseBody
-	@PostMapping(value = "/ssorequest/idp/okta")
+	@PostMapping(value = "/ssorequest/idp/consumer")
 	public Response redi(HttpServletRequest request) {
 
 		Map<String, String[]> parameterMap = request.getParameterMap();
@@ -257,13 +208,5 @@ public class LoginController {
 	
 	}
 	 
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 }
